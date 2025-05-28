@@ -1,56 +1,79 @@
 <template>
   <div class="calculator-container">
+    <div class="terminal-header">
+      <div class="terminal-title">]APPLE ][ CALCULATOR SYSTEM</div>
+      <div class="terminal-cursor">█</div>
+    </div>
+    
     <div class="input-section">
+      <div class="terminal-prompt">]INPUT VALUES:</div>
+      
       <div class="input-group">
+        <div class="input-label-top">]PRICE:</div>
         <input 
           v-model="price" 
           @input="onPriceChange"
           type="number" 
-          placeholder="Цена"
+          placeholder="0.00"
           class="input-field"
         />
-        <div class="input-label">Цена: {{ Number(price).toFixed(2) }}</div>
+        <div class="input-display">PRICE: {{ Number(price).toFixed(2) }}</div>
       </div>
       
       <div class="input-group">
+        <div class="input-label-top">]QTY:</div>
         <input 
           v-model="qty" 
           @input="onQtyChange"
           type="number" 
-          placeholder="Количество"
+          placeholder="0.00"
           class="input-field"
         />
-        <div class="input-label">Количество: {{ Number(qty).toFixed(2) }}</div>
+        <div class="input-display">QTY: {{ Number(qty).toFixed(2) }}</div>
       </div>
       
       <div class="input-group">
+        <div class="input-label-top">]AMOUNT:</div>
         <input 
           v-model="amount" 
           @input="onAmountChange"
           type="number" 
-          placeholder="Сумма"
+          placeholder="0.00"
           class="input-field"
         />
-        <div class="input-label">Сумма: {{ Number(amount).toFixed(2) }}</div>
+        <div class="input-display">AMOUNT: {{ Number(amount).toFixed(2) }}</div>
       </div>
       
-      <button @click="submitData" :disabled="isLoading" class="submit-button">
-        {{ isLoading ? 'Отправка...' : 'Отправить данные' }}
-      </button>
+      <div class="submit-section">
+        <div class="terminal-prompt">]EXECUTE:</div>
+        <button @click="submitData" :disabled="isLoading" class="submit-button">
+          {{ isLoading ? '>PROCESSING...' : '>SUBMIT DATA' }}
+        </button>
+      </div>
     </div>
 
-    <div class="labels-section">
-      <div class="localStorage-display">LocalStorage: <pre>{{ localStorageData }}</pre></div>
-    </div>
-
-    <div class="events-section">
-      <h3>События:</h3>
-      <div class="events-list">
-        <div v-for="event in events" :key="event.id" class="event-item">
-          <div class="event-timestamp">{{ event.timestamp }}</div>
-          <div class="event-type">{{ event.type }}</div>
-          <div class="event-data">{{ event.data }}</div>
+    <div class="data-section">
+      <div class="storage-panel">
+        <div class="panel-header">┌─ STORAGE ─────────────────────┐</div>
+        <div class="panel-content">
+          <div class="storage-display">{{ localStorageData }}</div>
         </div>
+        <div class="panel-footer">└───────────────────────────────┘</div>
+      </div>
+
+      <div class="events-panel">
+        <div class="panel-header">┌─ EVENT LOG ───────────────────┐</div>
+        <div class="panel-content">
+          <div class="events-list">
+            <div v-for="event in events" :key="event.id" class="event-item">
+              <div class="event-line">
+                >{{ event.timestamp }} [{{ event.type.toUpperCase() }}]
+              </div>
+              <div class="event-data">{{ event.data }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel-footer">└───────────────────────────────┘</div>
       </div>
     </div>
   </div>
@@ -274,395 +297,216 @@ onMounted(() => {
 <style scoped>
 .calculator-container {
   width: 100%;
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 40px;
-  font-family: 'Rajdhani', 'Orbitron', 'Roboto Condensed', sans-serif;
-  background: rgba(20, 20, 20, 0.95);
-  backdrop-filter: blur(20px);
-  border-radius: 4px;
-  border: 2px solid rgba(255, 107, 53, 0.3);
-  box-shadow: 0 0 40px rgba(255, 107, 53, 0.2),
-              inset 0 1px 0 rgba(255, 107, 53, 0.1);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto auto 1fr;
-  gap: 30px;
-  min-height: calc(100vh - 300px);
+  padding: 20px;
+  font-family: 'VT323', 'Courier Prime', monospace;
+  background: #001100;
+  border: 2px solid #00ff00;
+  border-radius: 0;
+  color: #00ff00;
+  font-size: 18px;
+  line-height: 1.2;
+  text-transform: uppercase;
   position: relative;
-  overflow: hidden;
+  box-shadow: 
+    inset 0 0 50px rgba(0, 255, 0, 0.1),
+    0 0 30px rgba(0, 255, 0, 0.3);
+  animation: terminalGlow 3s ease infinite alternate;
 }
 
-.calculator-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, 
-    rgba(255, 107, 53, 0.03) 0%,
-    rgba(20, 20, 20, 0.8) 50%,
-    rgba(255, 107, 53, 0.03) 100%);
-  pointer-events: none;
-  z-index: 1;
+@keyframes terminalGlow {
+  0% { 
+    box-shadow: 
+      inset 0 0 50px rgba(0, 255, 0, 0.1),
+      0 0 30px rgba(0, 255, 0, 0.3);
+  }
+  100% { 
+    box-shadow: 
+      inset 0 0 70px rgba(0, 255, 0, 0.15),
+      0 0 40px rgba(0, 255, 0, 0.4);
+  }
 }
 
-.calculator-container > * {
-  position: relative;
-  z-index: 2;
+.terminal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #00ff00;
+  margin-bottom: 20px;
+}
+
+.terminal-title {
+  font-size: 20px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px #00ff00;
+}
+
+.terminal-cursor {
+  animation: blink 1s infinite;
+  font-size: 20px;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.terminal-prompt {
+  margin: 15px 0 10px 0;
+  font-size: 16px;
+  color: #00ff00;
+  text-shadow: 0 0 5px #00ff00;
 }
 
 .input-section {
-  grid-column: 1 / -1;
-  display: flex;
-  gap: 25px;
-  padding: 40px;
-  background: rgba(30, 30, 30, 0.9);
-  backdrop-filter: blur(10px);
-  border-radius: 2px;
-  border: 1px solid rgba(255, 107, 53, 0.4);
-  box-shadow: inset 0 2px 0 rgba(255, 107, 53, 0.2),
-              0 4px 20px rgba(0, 0, 0, 0.5);
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: flex-start;
-  position: relative;
-  overflow: hidden;
-}
-
-.input-section::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, 
-    transparent, 
-    #ff6b35, 
-    #f7931e,
-    transparent);
-  animation: scanLine 4s infinite;
-}
-
-@keyframes scanLine {
-  0% { left: -100%; }
-  100% { left: 100%; }
+  margin-bottom: 30px;
+  padding: 20px;
+  border: 1px solid #00ff00;
+  background: rgba(0, 255, 0, 0.02);
 }
 
 .input-group {
+  margin-bottom: 20px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  min-width: 200px;
-  max-width: 250px;
-  flex: 1;
-  margin-bottom: 20px;
+  gap: 5px;
+}
+
+.input-label-top {
+  font-size: 14px;
+  color: #00ff00;
+  text-shadow: 0 0 5px #00ff00;
+  margin-bottom: 5px;
 }
 
 .input-field {
   width: 100%;
-  padding: 18px 24px;
-  border: 2px solid rgba(255, 107, 53, 0.3);
-  border-radius: 2px;
+  padding: 8px 12px;
+  background: #000000;
+  border: 1px solid #00ff00;
+  color: #00ff00;
+  font-family: 'VT323', monospace;
   font-size: 18px;
-  font-weight: 700;
-  background: rgba(15, 15, 15, 0.9);
-  color: #ffffff;
-  text-align: center;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3),
-              0 0 20px rgba(255, 107, 53, 0.1);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-family: 'Orbitron', monospace;
   text-transform: uppercase;
+  outline: none;
+  box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.1);
 }
 
 .input-field:focus {
-  outline: none;
-  transform: translateY(-2px);
-  border-color: #ff6b35;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3),
-              0 0 30px rgba(255, 107, 53, 0.4),
-              0 0 0 2px rgba(255, 107, 53, 0.2);
-  background: rgba(20, 20, 20, 0.95);
+  box-shadow: 
+    inset 0 0 20px rgba(0, 255, 0, 0.2),
+    0 0 10px rgba(0, 255, 0, 0.5);
+  text-shadow: 0 0 5px #00ff00;
 }
 
 .input-field::placeholder {
-  color: rgba(255, 107, 53, 0.5);
-  font-weight: 600;
+  color: rgba(0, 255, 0, 0.5);
 }
 
-.input-label {
-  margin-top: 16px;
+.input-display {
   font-size: 14px;
-  font-weight: 700;
-  color: #ff6b35;
-  text-align: center;
-  padding: 10px 16px;
-  background: rgba(30, 30, 30, 0.8);
-  backdrop-filter: blur(10px);
-  border-radius: 2px;
-  width: 100%;
-  border: 1px solid rgba(255, 107, 53, 0.3);
-  box-shadow: inset 0 1px 0 rgba(255, 107, 53, 0.1),
-              0 2px 10px rgba(0, 0, 0, 0.3);
-  text-shadow: 0 0 10px rgba(255, 107, 53, 0.3);
-  transition: all 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-family: 'Rajdhani', sans-serif;
+  color: #00ff00;
+  background: rgba(0, 255, 0, 0.05);
+  padding: 5px 10px;
+  border: 1px solid rgba(0, 255, 0, 0.3);
+  margin-top: 5px;
+  font-family: 'VT323', monospace;
 }
 
-.input-label:hover {
-  background: rgba(40, 40, 40, 0.9);
-  transform: translateY(-1px);
-  box-shadow: inset 0 1px 0 rgba(255, 107, 53, 0.2),
-              0 4px 15px rgba(0, 0, 0, 0.4);
+.submit-section {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(0, 255, 0, 0.3);
 }
 
 .submit-button {
-  padding: 18px 40px;
-  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
-  color: #000000;
-  border: 2px solid #ff6b35;
-  border-radius: 2px;
-  cursor: pointer;
-  font-size: 18px;
-  font-weight: 900;
+  background: #000000;
+  border: 2px solid #00ff00;
+  color: #00ff00;
+  padding: 10px 20px;
+  font-family: 'VT323', monospace;
+  font-size: 16px;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  min-width: 220px;
-  white-space: nowrap;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 0 30px rgba(255, 107, 53, 0.4),
-              inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-family: 'Orbitron', sans-serif;
-}
-
-.submit-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(255, 255, 255, 0.3), 
-    transparent);
-  transition: left 0.5s;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.1);
 }
 
 .submit-button:hover:not(:disabled) {
-  transform: translateY(-3px);
-  box-shadow: 0 0 40px rgba(255, 107, 53, 0.6),
-              inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  background: linear-gradient(135deg, #f7931e 0%, #ff6b35 100%);
-}
-
-.submit-button:hover:not(:disabled)::before {
-  left: 100%;
-}
-
-.submit-button:active:not(:disabled) {
-  transform: translateY(-1px);
+  background: rgba(0, 255, 0, 0.1);
+  box-shadow: 
+    inset 0 0 20px rgba(0, 255, 0, 0.2),
+    0 0 15px rgba(0, 255, 0, 0.5);
+  text-shadow: 0 0 8px #00ff00;
 }
 
 .submit-button:disabled {
-  background: linear-gradient(135deg, #666666 0%, #444444 100%);
-  border-color: #666666;
-  color: #999999;
+  opacity: 0.6;
   cursor: not-allowed;
-  transform: none;
-  box-shadow: 0 0 15px rgba(102, 102, 102, 0.2);
+  animation: processingBlink 0.5s infinite;
 }
 
-.labels-section {
-  grid-column: 1;
-  padding: 30px;
-  background: rgba(20, 20, 20, 0.95);
-  backdrop-filter: blur(20px);
-  border-radius: 2px;
-  border: 1px solid rgba(255, 107, 53, 0.3);
-  box-shadow: 0 0 30px rgba(255, 107, 53, 0.1);
-  height: fit-content;
-  position: relative;
-  overflow: hidden;
+@keyframes processingBlink {
+  0%, 50% { background: #000000; }
+  51%, 100% { background: rgba(0, 255, 0, 0.1); }
 }
 
-.labels-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, 
-    transparent,
-    #ff6b35,
-    #f7931e,
-    transparent);
+.data-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 30px;
 }
 
-.localStorage-display {
-  background: rgba(30, 30, 30, 0.9) !important;
-  backdrop-filter: blur(10px);
-  border-radius: 2px;
-  padding: 24px !important;
-  margin: 0;
-  border: 1px solid rgba(255, 107, 53, 0.4);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3),
-              0 0 20px rgba(255, 107, 53, 0.1);
-  position: relative;
-  overflow: hidden;
+.storage-panel,
+.events-panel {
+  background: rgba(0, 255, 0, 0.02);
+  border: 1px solid #00ff00;
+  font-family: 'VT323', monospace;
 }
 
-.localStorage-display::before {
-  content: '💾 STORAGE';
-  position: absolute;
-  top: 8px;
-  right: 12px;
-  font-size: 12px;
-  color: #ff6b35;
-  font-weight: 700;
-  opacity: 0.7;
-  font-family: 'Rajdhani', sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-}
-
-.localStorage-display pre {
-  color: #ff6b35;
-  font-family: 'Orbitron', 'JetBrains Mono', monospace;
+.panel-header,
+.panel-footer {
+  color: #00ff00;
   font-size: 14px;
+  text-align: center;
+  padding: 5px;
+  background: rgba(0, 255, 0, 0.05);
+  text-shadow: 0 0 5px #00ff00;
+}
+
+.panel-content {
+  padding: 15px;
+  min-height: 200px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.storage-display {
+  font-family: 'VT323', monospace;
+  font-size: 14px;
+  color: #00ff00;
   white-space: pre-wrap;
   word-break: break-all;
-  margin: 0;
-  line-height: 1.6;
-  text-shadow: 0 0 10px rgba(255, 107, 53, 0.3);
-  font-weight: 600;
-}
-
-.events-section {
-  grid-column: 2;
-  border: 1px solid rgba(255, 107, 53, 0.3);
-  border-radius: 2px;
-  padding: 30px;
-  background: rgba(20, 20, 20, 0.95);
-  backdrop-filter: blur(20px);
-  display: flex;
-  flex-direction: column;
-  height: fit-content;
-  max-height: 70vh;
-  box-shadow: 0 0 30px rgba(255, 107, 53, 0.1);
-  position: relative;
-  overflow: hidden;
-}
-
-.events-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, 
-    transparent,
-    #f7931e,
-    #ff6b35,
-    transparent);
-}
-
-.events-section h3 {
-  margin-top: 0;
-  margin-bottom: 25px;
-  color: #ff6b35;
-  font-size: 22px;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  text-align: center;
-  padding-bottom: 15px;
-  border-bottom: 2px solid rgba(255, 107, 53, 0.3);
-  text-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
-  position: relative;
-  font-family: 'Orbitron', sans-serif;
-}
-
-.events-section h3::before {
-  content: '⚡ EVENTS LOG';
-  font-size: 14px;
-  color: #f7931e;
+  line-height: 1.4;
+  background: rgba(0, 255, 0, 0.02);
+  padding: 10px;
+  border: 1px solid rgba(0, 255, 0, 0.2);
 }
 
 .events-list {
-  flex: 1;
-  overflow-y: auto;
-  border-radius: 2px;
-  background: rgba(15, 15, 15, 0.8);
-  backdrop-filter: blur(10px);
-  max-height: 500px;
-  padding: 5px;
-  border: 1px solid rgba(255, 107, 53, 0.2);
-}
-
-.events-list::-webkit-scrollbar {
-  width: 8px;
-}
-
-.events-list::-webkit-scrollbar-track {
-  background: rgba(20, 20, 20, 0.5);
-  border-radius: 2px;
-}
-
-.events-list::-webkit-scrollbar-thumb {
-  background: rgba(255, 107, 53, 0.5);
-  border-radius: 2px;
-}
-
-.events-list::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 107, 53, 0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .event-item {
-  border-bottom: 1px solid rgba(255, 107, 53, 0.2);
-  padding: 20px;
-  margin: 5px;
-  background: rgba(30, 30, 30, 0.8);
-  backdrop-filter: blur(10px);
-  border-radius: 2px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid rgba(255, 107, 53, 0.1);
-  position: relative;
-  overflow: hidden;
-}
-
-.event-item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(255, 107, 53, 0.1), 
-    transparent);
-  transition: left 0.5s;
-}
-
-.event-item:hover {
-  background: rgba(40, 40, 40, 0.9);
-  transform: translateX(5px);
-  border-color: rgba(255, 107, 53, 0.4);
-  box-shadow: 0 0 20px rgba(255, 107, 53, 0.1);
-}
-
-.event-item:hover::before {
-  left: 100%;
+  border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+  padding-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .event-item:last-child {
@@ -670,150 +514,112 @@ onMounted(() => {
   margin-bottom: 0;
 }
 
-.event-timestamp {
-  font-size: 11px;
-  color: rgba(247, 147, 30, 0.8);
-  margin-bottom: 8px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  font-family: 'Orbitron', monospace;
-}
-
-.event-type {
-  font-weight: 900;
-  margin-bottom: 12px;
-  color: #ff6b35;
-  font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  text-shadow: 0 0 10px rgba(255, 107, 53, 0.3);
-  font-family: 'Rajdhani', sans-serif;
+.event-line {
+  font-size: 12px;
+  color: #00ff00;
+  margin-bottom: 5px;
+  text-shadow: 0 0 3px #00ff00;
 }
 
 .event-data {
-  font-size: 13px;
+  font-size: 12px;
+  color: rgba(0, 255, 0, 0.8);
+  padding-left: 10px;
   word-break: break-all;
-  background: rgba(15, 15, 15, 0.8);
-  backdrop-filter: blur(5px);
-  color: #ffffff;
-  padding: 15px 20px;
-  border-radius: 2px;
-  font-weight: 500;
-  line-height: 1.5;
-  border: 1px solid rgba(255, 107, 53, 0.2);
-  font-family: 'Orbitron', monospace;
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+  line-height: 1.3;
+  background: rgba(0, 255, 0, 0.02);
+  border-left: 2px solid rgba(0, 255, 0, 0.3);
+  padding: 5px 10px;
 }
 
-/* Адаптивность для мобильных устройств */
+/* Scrollbar styles */
+.panel-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.panel-content::-webkit-scrollbar-track {
+  background: rgba(0, 255, 0, 0.1);
+}
+
+.panel-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 0, 0.5);
+}
+
+.panel-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 0, 0.7);
+}
+
+/* Responsive design */
 @media (max-width: 1024px) {
-  .calculator-container {
+  .data-section {
     grid-template-columns: 1fr;
-    padding: 30px;
-    gap: 25px;
+    gap: 15px;
   }
   
-  .labels-section,
-  .events-section {
-    grid-column: 1;
-  }
-  
-  .input-section {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 30px;
-  }
-  
-  .input-group {
-    min-width: auto;
-    max-width: none;
-    width: 100%;
-  }
-  
-  .input-field,
-  .submit-button {
-    min-width: auto;
-    width: 100%;
+  .calculator-container {
+    padding: 15px;
+    font-size: 16px;
   }
 }
 
 @media (max-width: 768px) {
   .calculator-container {
-    padding: 20px;
-    gap: 20px;
+    padding: 10px;
+    font-size: 14px;
     margin: 10px;
-    border-radius: 2px;
   }
   
-  .input-section {
-    padding: 25px;
-  }
-  
-  .labels-section,
-  .events-section {
-    padding: 25px;
-  }
-  
-  .events-section {
-    max-height: 50vh;
+  .terminal-title {
+    font-size: 16px;
   }
   
   .input-field {
     font-size: 16px;
-    padding: 15px 20px;
+    padding: 6px 10px;
   }
   
   .submit-button {
-    font-size: 16px;
-    padding: 15px 25px;
+    font-size: 14px;
+    padding: 8px 16px;
   }
   
-  .input-group {
-    margin-bottom: 15px;
+  .panel-content {
+    max-height: 250px;
   }
 }
 
-/* Военные анимации */
-@keyframes tacticalPulse {
-  0%, 100% { 
-    box-shadow: 0 0 30px rgba(255, 107, 53, 0.2);
-  }
-  50% { 
-    box-shadow: 0 0 40px rgba(255, 107, 53, 0.4);
-  }
-}
-
-.submit-button:disabled {
-  animation: tacticalPulse 2s infinite;
-}
-
-/* Анимация появления */
+/* Terminal startup animation */
 .calculator-container {
-  animation: militaryDeploy 1s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: terminalStartup 2s ease-out;
 }
 
-@keyframes militaryDeploy {
-  from {
+@keyframes terminalStartup {
+  0% {
     opacity: 0;
-    transform: translateY(30px) scale(0.95);
+    transform: scale(0.8);
+    filter: brightness(0);
   }
-  to {
+  50% {
+    opacity: 0.5;
+    transform: scale(0.9);
+    filter: brightness(0.5);
+  }
+  100% {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: scale(1);
+    filter: brightness(1);
   }
 }
 
 .input-group {
-  animation: squadDeploy 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: typeIn 0.5s ease-out;
 }
 
-.input-group:nth-child(1) { animation-delay: 0.1s; }
-.input-group:nth-child(2) { animation-delay: 0.2s; }
-.input-group:nth-child(3) { animation-delay: 0.3s; }
-.submit-button { animation-delay: 0.4s; }
+.input-group:nth-child(2) { animation-delay: 0.1s; }
+.input-group:nth-child(3) { animation-delay: 0.2s; }
+.input-group:nth-child(4) { animation-delay: 0.3s; }
 
-@keyframes squadDeploy {
+@keyframes typeIn {
   from {
     opacity: 0;
     transform: translateX(-20px);
@@ -822,5 +628,48 @@ onMounted(() => {
     opacity: 1;
     transform: translateX(0);
   }
+}
+
+/* CRT scan effect */
+.calculator-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 0, 0.03) 2px,
+    rgba(0, 255, 0, 0.03) 4px
+  );
+  pointer-events: none;
+  animation: scanMove 0.1s linear infinite;
+}
+
+@keyframes scanMove {
+  0% { transform: translateY(0px); }
+  100% { transform: translateY(4px); }
+}
+
+/* Retro glow effect */
+.terminal-title,
+.terminal-prompt,
+.input-label-top {
+  position: relative;
+}
+
+.terminal-title::after,
+.terminal-prompt::after,
+.input-label-top::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: rgba(0, 255, 0, 0.3);
+  filter: blur(1px);
+  z-index: -1;
 }
 </style> 
